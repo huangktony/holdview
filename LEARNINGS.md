@@ -20,3 +20,16 @@
 - Understanding JWT tokens in cookies for login vs local storage
 - How Request/Response cycles work in HTTP when communicating between frontend and backend
 - What does worker do with the message left in queue? How does it work in general?
+
+# 2026-05-26
+
+## What I did today
+- Installed uv, initialized it and added FastAPI and uvicorn as dependencies onto the venv.
+
+## What I didn't know before
+- Program binds to a port, here we're using Uvicorn, listening to incoming HTTP requests
+- An application, FastAPI, defines the endpoints
+- We create Python venv because we don't want to have dependency conflict problems
+    - Only one slot for one version of the library. Some programs may require a specific version, so we just use the venv instead of polluting our system.
+    - Makes your program reproducible and easily to clean up
+- uv is a package manager. A newer version of pip

@@ -21,4 +21,26 @@
 - Untracked file: a file in repo that Git isn't watching yet. Starts being tracked once you git add it.
 - Tracked: a file Git is monitoring for changes
 - Branch: a named line of dev in Git. By default you start on main, then you create new branches which can later merge.
+- Staging area: middle layer in Git where files wait between untracked and commited. 
+    * git add: puts files into staging.
+    * git commit: records what's in staging.
+- Commit: snapshot of the project at a specific point in time
+    * Commit hash: unique ID referencing specific commits
+    * Root commit: first commit in a repo
+- HEAD: Git's pointer to where you currently are
 
+# 2026-05-26
+- HTTP: text-based protocols for client-server communication on the web.
+    - Requests contain: the method, path, headers, and optional body
+    - Responses contain: status code, headers, and optional body
+- Status code: a 3-digit number in HTTP responses indicating result
+- Header: key-value metadata attached to request/response
+- Body: actual data in request/response
+- JSON: text format for structured data. Default data format for modern web APIs
+- Request lifecycle: the sequence of steps from browser request to backend response, through uvicorn → FastAPI routing → validation → handler function → serialization → uvicorn → browser.
+- pyproject.toml: the standard config file for modern Python projects. Declares metadata, Python version, dependencies, and tool settings.
+- touch (shell command): creates a empty file if it doesn't exist. Commonly used to create placeholder files
+- uv.lock: auto-generated file with exact versions of every installed dependency/sub-dependency. Committed to Git for reproducibility.
+- Package manager: a tool that fetches, installs, tracks, and resolves dependencies between libraries
+- PyPI (Python Package Index): public library where Python libraries are hosted
+- Dependency graph: tree of libraries your project depends on, plus what those depend on as well
