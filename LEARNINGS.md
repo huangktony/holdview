@@ -25,6 +25,8 @@
 
 ## What I did today
 - Installed uv, initialized it and added FastAPI and uvicorn as dependencies onto the venv.
+- Wrote my first FastAPI endpoint at the root that returns Hello from Holdview
+- Used Claude to mental map on how an HTTP request flows from start (URL) to end
 
 ## What I didn't know before
 - Program binds to a port, here we're using Uvicorn, listening to incoming HTTP requests
@@ -33,3 +35,11 @@
     - Only one slot for one version of the library. Some programs may require a specific version, so we just use the venv instead of polluting our system.
     - Makes your program reproducible and easily to clean up
 - uv is a package manager. A newer version of pip
+- uvicorn is program that runs on the server. Binds to a port, listening for requests. Also serves as a way to send data back to client.
+- FastAPI is an app in server memory. Once a request comes in uvicorn hands it over for FastAPI to handle
+
+## What still needs work
+- Need to be able to explain how decorators work mechanically and what they are conceptually
+- Async/await in Python
+- Learn what CORS is
+- Be able write my own endpoints and learn how to write them well

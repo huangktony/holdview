@@ -1,0 +1,28 @@
+# ADR-002: Backend Stack — Python + FastAPI + uv
+
+## Context
+Holdview's backend needs to handle:
+- PDF processing: ingest a user's brokerage statement and extract structured holdings data from them.
+- Slow background work: PDF processing takes estimated 20-60 seconds. We don't want a single process to block the request/response cycle.
+- LLM analysis: integrate with an LLM to analyze news against a user's holdings
+- Persistent storage: database with users, portfolios, holdings, and analysis results
+
+## Options Considered
+The language was decided first based on ecosystem fit; the framework choice happened within Python.
+
+Python frameworks considered:
+- Django — heavyweight framework, batteries-included
+- Flask — minimal framework, older sync-first patterns
+- FastAPI — modern async-native framework
+
+## Decision
+Python + FastAPI, managed by uv.
+
+## Rationale
+- Why Python?
+    - 
+## Tradeoffs
+What I'm giving up by choosing this.
+
+## Status
+Accepted
