@@ -20,9 +20,18 @@ Python + FastAPI, managed by uv.
 
 ## Rationale
 - Why Python?
-    - 
+    - I chose Python as my language because Holdview will utilize LLM integration as one of the core features. So in order to facilitate that, I wanted to choose a language that contains libraries that have been polished for LLMs and PDF parsing. So despite Python being slower than alternatives, its library ecosystem advantages outweighs the cost of pure speed. Also since most of the overhead would come from I/O bound waits, I can overlook the slowness that comes from Python's CPU work.
+- Why FastAPI?
+    - I chose to use FastAPI as my backend framework along Python as it's optimized to utilize Python's modern toolset. It also leverages async processing and type hints. Async matters because the backend spends a lot of its runtime waiting on the LLM API. Using async lets one process serve other requests during those waits instead of block the whole request/response cycle. Other frameworks like Django includes batteries (admin, templating, ORM) that overlap with or aren't needed when the frontend is a separate React SPA. As well as Flask is older and runs sync-first witout type-hint validation; doesn't do what FastAPI does natively.
+- Why uv?
+    -  I chose uv as my package manager as it can be 10-100x faster vs its counterparts like pip or Poetry. It contains all its tools in a unified workflow condensed into a single CLI compared to pip using 3-4 separate tools.
 ## Tradeoffs
-What I'm giving up by choosing this.
+- For Python
+    - I gave up CPU-bound parallelism within a single process due to Python's GIL limits. This is fine because Holdview's slowest work is I/O bound, not CPU-bound. Plus the CPU-heavy part (PDF parsing) runs in a separate worker process anyways.
+- For FastAPI
+    - I gave up a bigger plugin ecosystem that a more mature framework like Django would provide. This is fine because Holdview doesn't need all the niche plugins that FastAPI's standard set doesn't provide.
+- For uv
+    - I gave up a more developed and tested package manager. This is fine as the workflow is simple and switching to another one is not difficult at all.
 
 ## Status
 Accepted

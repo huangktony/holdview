@@ -34,7 +34,8 @@
 - We create Python venv because we don't want to have dependency conflict problems
     - Only one slot for one version of the library. Some programs may require a specific version, so we just use the venv instead of polluting our system.
     - Makes your program reproducible and easily to clean up
-- uv is a package manager. A newer version of pip
+- uv is a package manager. A newer counterpart to pip. 
+    - faster, contains workflow tools in one place
 - uvicorn is program that runs on the server. Binds to a port, listening for requests. Also serves as a way to send data back to client.
 - FastAPI is an app in server memory. Once a request comes in uvicorn hands it over for FastAPI to handle
 

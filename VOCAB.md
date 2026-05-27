@@ -44,3 +44,6 @@
 - Package manager: a tool that fetches, installs, tracks, and resolves dependencies between libraries
 - PyPI (Python Package Index): public library where Python libraries are hosted
 - Dependency graph: tree of libraries your project depends on, plus what those depend on as well
+
+# 2026-05-27
+- CLI (Command-Line Interface): a way of interacting with a program by typing text commands into a terminal. Contrast with GUI (Graphical User Interface). Most developer tools are primarily CLIs.
