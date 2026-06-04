@@ -8,7 +8,6 @@
     - Request is sent by the client specifying a method (GET, POST, PUT, DELETE)
     - Response is the server replying back
     * Servers only ever reply when prompted by client
-- CORS (Cross Origin Resource Sharing): mechanism that allows legit cross-origin requests. Website tells browser that the page from that origin is allowed to make requests.
 - Same-Origin Policy: JavaScript running on one origin cannot request another
     - Prevents malicious sites from using your cookie in your browser to request other origins
 - Client / Server: roles in a request, not specific programs. The client initiates the request; the server responds. The same program can be a client in one interaction and a server in another.
@@ -47,3 +46,27 @@
 
 # 2026-05-27
 - CLI (Command-Line Interface): a way of interacting with a program by typing text commands into a terminal. Contrast with GUI (Graphical User Interface). Most developer tools are primarily CLIs.
+
+# 2026-06-03 
+- Public-key cryptography: a system using paired keys — private (kept secret) and public (shared). Messages signed by the private key can be verified by anyone with the public key, but only the private-key holder could have signed them.
+- SSH key pair: a specific application of public-key crypto for authenticating to servers. Generated with ssh-keygen.
+- ssh-keygen: command-line tool for generating SSH key pairs. Standard flags: -t for algorithm, -C for comment.
+- Ed25519: a modern, fast, secure algorithm for SSH key generation. Preferred over older RSA.
+- Passphrase (SSH): an optional password that encrypts the private key on disk. Without it, anyone with file access to the key can use it.
+- Remote: a copy of a Git repo hosted somewhere else (typically GitHub, GitLab, etc.). origin is the conventional name for the main remote.
+- git push: send local commits to a remote.
+- git pull: fetch commits from a remote and merge them into your local branch.
+- Tracking branch: a local branch linked to a specific remote branch, established with git push -u origin <branch>.
+- CORS: browser runs protection method called Same-Origin Policy which blocks cross origin requests made by JavaScript in order to protect against malicious sites abusing the session token saved on the browser. CORS allows the server to declare which origins it allows to request it making sure the legit requests still go through.
+- React: a JavaScript library for building user interfaces. You write components (reusable UI pieces), React handles efficiently rendering them in the browser. By far the most common frontend framework in industry.
+- Vite: a build tool. It runs your dev server, compiles your TypeScript/JSX to plain JavaScript the browser can run, and bundles your code for production. Vite is fast (newer, designed for modern browsers) and is replacing the older Webpack-based tooling.
+- TypeScript: JavaScript with types. You write code that looks like JavaScript but with type annotations (similar to Java's typing system). TypeScript checks types at compile time and catches bugs before runtime. The compiled output is plain JavaScript.
+- Node.js: runs JavaScript outside the browser. Used to run build tools and dev servers locally.
+- npm (Node Package Manager): JavaScript's package manager. Equivalent role to uv. Installs libraries, manages dependencies, runs scripts.
+
+# 2026-06-04
+- JSX: HTML-like syntax inside JavaScript/TypeScript files, used by React. Compiles to plain JavaScript function calls under the hood. Must wrap text content in elements; can embed JS expressions inside {}
+- React component: a function (or class) that returns JSX. Used as a reusable UI piece. Named with a capital letter by convention.
+- useState: a React Hook that gives a component a piece of state and a setter function. Calling the setter re-renders the component.
+- ES modules: JavaScript's module system. Each .ts/.tsx/.js file is a module. Use export to expose values; use import to consume them.
+- useEffect: React Hook that runs side-effect code (fetches, subscriptions, DOM manipulations) at specific points in a component's lifecycle. Takes a function and a dependency array. Empty array = run once on mount; array with values = run on mount and when any value changes; no array = run every render.
