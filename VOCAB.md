@@ -70,3 +70,29 @@
 - useState: a React Hook that gives a component a piece of state and a setter function. Calling the setter re-renders the component.
 - ES modules: JavaScript's module system. Each .ts/.tsx/.js file is a module. Use export to expose values; use import to consume them.
 - useEffect: React Hook that runs side-effect code (fetches, subscriptions, DOM manipulations) at specific points in a component's lifecycle. Takes a function and a dependency array. Empty array = run once on mount; array with values = run on mount and when any value changes; no array = run every render.
+- Scaffolding: generated boilerplate code/files that form the starting structure of a project or feature. Tools like npm create vite, uv init, django-admin startproject scaffold projects. Distinct from the application-specific code you write on top.
+- Hook (React): special React functions starting with use (useState, useEffect, etc.) that let function components access React features like state and lifecycle.
+- Middleware: code that runs on every request before it reaches the endpoint, and on every response after the endpoint returns. Used for cross-cutting concerns like CORS, auth, logging, compression.
+
+# 2026-06-06
+- Process: a running instance of a program with its own memory space. The OS tracks them by PID. Killing a process kills everything loaded into its memory.
+- Network protocol: the agreed-upon format for two programs to talk over a network. HTTP is one; Postgres has its own; Redis has its own; etc.
+- Durability: a database property — data survives crashes, restarts, and process termination. One of the core reasons databases exist as separate services.
+- Serialization: converting an in-memory data structure (Python object, JavaScript object) into a format suitable for transmission or storage (JSON text, binary). The reverse is deserialization (parsing JSON back into objects).
+- Migration file: one versioned, atomic description of a schema change (one file per change). Lives in your repo, applied via a migration tool.
+- alembic upgrade head: command that applies all pending migrations to bring the DB up to the latest schema version.
+- psql: Postgres's command-line client. Connects to a Postgres server and lets you run SQL interactively. Use \ commands for psql-specific shortcuts (like \l to list databases, \q to quit, \d to describe a table).
+- REPL: Read-Eval-Print Loop. An interactive prompt where you type a command, it runs, prints the result, then waits for more. Python's interactive shell is a REPL; psql is a REPL for SQL.
+- createdb: Postgres CLI utility for creating a new database. Equivalent to CREATE DATABASE inside psql.
+- Postgres server vs database: one server can host many databases. The server runs on a port (5432); each database is isolated within it. You connect to a specific database, not "to Postgres" generically.
+- Connection string: a URL that specifies how to reach a database. Format: postgresql://user:password@host:port/database. Example: postgresql://localhost:5432/holdview.
+- Connection pool: a pre-opened, reusable set of database connections shared across requests. Avoids paying connection-setup cost per query. Managed by SQLAlchemy automatically.
+- Session (SQLAlchemy): a unit of work with the database for one logical operation (typically per HTTP request). Tracks objects, batches changes into transactions, borrows connections from the pool as needed.
+- Transaction: a group of database operations that succeed or fail atomically. Either all the changes commit, or none do. Sessions wrap their work in transactions automatically.
+- Declarative base (SQLAlchemy): a base class that all your ORM models inherit from. Acts as a registry so SQLAlchemy knows which classes correspond to database tables. Alembic uses it to generate migrations.
+- Primary key: a column whose value uniquely identifies each row in a table. Typically an integer id column that auto-increments.
+
+# 2026-06-08
+- Connection string: a URL describing how to reach a database. Used by clients (SQLAlchemy, Alembic) to find and connect to the database server. Format: postgresql+driver://user:pass@host:port/dbname.
+- Engine (SQLAlchemy): the top-level object managing a connection pool to a specific database. Created once per app. Takes the connection string as input.
+- Session factory (sessionmaker): a configured factory that, when called, produces fresh sessions bound to a specific engine.

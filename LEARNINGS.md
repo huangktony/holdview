@@ -44,3 +44,25 @@
 - Async/await in Python
 - Learn what CORS is
 - Be able write my own endpoints and learn how to write them well
+
+# 2026-06-04
+
+## What I did today
+- Synced up my local Git with Github repo using SSH token
+- Scaffolded my frontend using Vite + React
+- Wrote a working FastAPI backend with one endpoint, CORS configured
+- Full stack wired end-to-end (React Dev Server to FastAPI + uvicorn), rendering data from API in browser
+
+## What I didn't know before
+- CORS allows legit requests/reponses made by JavaScript to safely pass by the browser's safety measure (Same-Origin Policy)
+- Browsers only understands HTML/CSS/JS so we need a builder (Vite) that compiles our React (JSX) and TypeScript into JS
+- Since the CORS middleware is written on the server side, the browser notes the request from localhost:5173 is cross-origin. Then the request hits uvicorn->FastAPI and goes through the CORS middleware and attaches the CORS header if localhost:5173 is in its allow_origins list.
+- Scaffolding means setting up the boilerplate code. In our frontend we used npm create vite@latest to scaffold our Vite project. Then in our backend I used uv init to scaffold our Python project.
+
+## What still needs work
+- Async/await in Python
+- Be able to understand and speak on every stage that happens in the full stack wiring from frontend to backend.
+- Become very proficient in explaining the code in React and Python
+- Writing endpoints and React components
+
+# 2026-06-06
