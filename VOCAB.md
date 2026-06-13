@@ -100,4 +100,6 @@
 # 2026-06-13
 - Backfill (database): filling in values for existing rows when adding a new column or changing a constraint. Usually done as a separate step in a migration (or after) to handle existing data safely.
 - Migration gotcha (NOT NULL on existing table): adding a NOT NULL column to a table with existing data fails unless you provide a default or backfill the values first. Autogenerate doesn't catch this; you have to.
-
+- Hashing: a one-way function mapping input to fixed-length output. Used for password storage because verification is possible but reversal isn't. Examples: bcrypt, argon2, sha256.
+- Encryption: a two-way reversible transformation requiring a key. Used for data you need to read back later (TLS, encrypted files). Wrong tool for passwords.
+- Generator (Python): a function using yield instead of return. Pauses at yield, resumes when called again. Lets FastAPI's dependencies run setup → yield → teardown.
