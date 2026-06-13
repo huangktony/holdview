@@ -96,3 +96,8 @@
 - Connection string: a URL describing how to reach a database. Used by clients (SQLAlchemy, Alembic) to find and connect to the database server. Format: postgresql+driver://user:pass@host:port/dbname.
 - Engine (SQLAlchemy): the top-level object managing a connection pool to a specific database. Created once per app. Takes the connection string as input.
 - Session factory (sessionmaker): a configured factory that, when called, produces fresh sessions bound to a specific engine.
+
+# 2026-06-13
+- Backfill (database): filling in values for existing rows when adding a new column or changing a constraint. Usually done as a separate step in a migration (or after) to handle existing data safely.
+- Migration gotcha (NOT NULL on existing table): adding a NOT NULL column to a table with existing data fails unless you provide a default or backfill the values first. Autogenerate doesn't catch this; you have to.
+

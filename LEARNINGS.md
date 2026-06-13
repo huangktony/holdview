@@ -65,4 +65,19 @@
 - Become very proficient in explaining the code in React and Python
 - Writing endpoints and React components
 
-# 2026-06-06
+# 2026-06-13
+
+## What I did today
+- I installed Postgres, setup SQLAlchemy and Alembic.
+- Added Users table and User/Email columns as the first changes to our schema in SQLAlchemy. Then used Alembic to autogenerate migration file and reviewed it. Then made our first migration.
+
+## What I didn't know before
+- We use a connection string so that our libraries know where to talk to PostgreSQL and not the other way around. 
+- SQLAlchemy talks to Postgres through a driver called psycopg, which handles the actual network protocol.
+- Understood that the conneciton pool are preopened connections that sessions use to make changes/complete their tasks. Sessions group changes into transactions, which commit atomically or roll back entirely.
+- Alembic is able to generate migration files by following through the SQLAlchemy models via Base
+
+## What still needs work
+- Locking in the Alembic loop mentally mapped. 
+- Database read Path from end to end (SQLAlchemy to psycopg to Postgres and back)
+- Process vs Library distinction
