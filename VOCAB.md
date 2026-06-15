@@ -103,3 +103,13 @@
 - Hashing: a one-way function mapping input to fixed-length output. Used for password storage because verification is possible but reversal isn't. Examples: bcrypt, argon2, sha256.
 - Encryption: a two-way reversible transformation requiring a key. Used for data you need to read back later (TLS, encrypted files). Wrong tool for passwords.
 - Generator (Python): a function using yield instead of return. Pauses at yield, resumes when called again. Lets FastAPI's dependencies run setup → yield → teardown.
+- JWT (JSON Web Token): a base64-encoded string with three parts (header.payload.signature). Payload is readable; signature is HMAC-signed with a server-only secret, making the token tamper-proof.
+- Claim (JWT): a key-value pair in the JWT payload. Standard claims include sub (subject — who the token is for), exp (expiration), iat (issued at), iss (issuer).
+- HMAC: a keyed hash function. Inputs go in with a secret key; produces a fixed-length signature that can only be reproduced by someone with the same key. Used to sign JWTs.
+- Bearer token: an auth scheme where possession of the token is sufficient proof of identity. Sent in the Authorization: Bearer <token> header.
+- OAuth2PasswordBearer: a FastAPI helper that parses the Authorization: Bearer <token> header and extracts the token string. Does no security verification — just header parsing.
+- Authentication (AuthN): verifying identity — "who are you?" Established via credentials, maintained via tokens.
+- Authorization (AuthZ): verifying permissions — "what are you allowed to do?" Built on top of authentication.
+- User enumeration: an attack where error messages reveal which accounts exist. Defense: return the same generic error for "wrong password" and "no such user."
+- Salt (cryptography): random data added to a password before hashing. Ensures two users with the same password get different hashes. Embedded in bcrypt's output.
+- Defense in depth: layered security — multiple independent checks (signature, expiration, user existence) so no single failure compromises the system.

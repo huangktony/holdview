@@ -20,6 +20,8 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from app.db.base import Base
 from app.models import user  # noqa: F401  -- ensures the User model is registered
+from app.models import portfolio  # noqa: F401  -- ensures the Portfolio model is registered
+from app.models import holding  # noqa: F401  -- ensures the Holding model is registered
 
 target_metadata = Base.metadata
 

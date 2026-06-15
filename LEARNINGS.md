@@ -81,3 +81,20 @@
 - Locking in the Alembic loop mentally mapped. 
 - Database read Path from end to end (SQLAlchemy to psycopg to Postgres and back)
 - Process vs Library distinction
+
+# 2026-06-13
+
+## What I did today
+- Added JWT auth: JWT signature is an HMAC of header+payload, signed with a server-only secret. Anyone can read the payload but no one can produce a valid signature without the secret, making the token tamper-proof
+- Check tokens + other credentials to raise exceptions: invalid access token, missing user, incorrect password, past expiration
+- Created a new schema for auth, LoginRequest which contains email and password where we query the database to verify if this email exists and we call bcrypt.checkpw(submitted_password, stored_hash) which uses the salt embedded in the stored hash to verify
+
+## What I didn't know before
+- User enumeration defense: giving same error for "no such user" or "wrong password"
+- OAuth2Password Bearer parses the token if the format is right, if not, it raises a 401. Verification happens in decode_access_token
+
+## What still needs work
+- Solidifying auth mapping and being able to describe every step
+- Understanding how JWT tokens can be protected
+- Authorization vs Authentication
+- Re-recall the layering: oauth2_scheme (parsing) → decode_access_token (cryptographic verification) → DB lookup (existence verification). Three distinct steps for three distinct failure modes.
