@@ -98,3 +98,43 @@
 - Understanding how JWT tokens can be protected
 - Authorization vs Authentication
 - Re-recall the layering: oauth2_scheme (parsing) → decode_access_token (cryptographic verification) → DB lookup (existence verification). Three distinct steps for three distinct failure modes.
+
+# 2026-06-14
+
+## What I did today
+- Added portfolios and holdings table with foreign key relations
+- Used relationship() + back_populates to ensure SQLAlchemy sees that the relationship is the same end to end and sync up those relational values
+- Migrated the database schema using Alembic
+
+## What I didn't know before
+- relationship() = lets you access a foreign-key relationship as an attribute VS. manually querying for it
+- back_populates = when two relationship() calls are paired we can use this to keep them in sync
+- Foreign Key allows you to connect two tables together
+- Relationship allows you to access user.portfolios / portfolio.holdings and vice versa (easy accessing)
+    - Avoids # Without relationship attributes — painful
+    portfolio = db.query(Portfolio).first()
+    user = db.query(User).filter(User.id == portfolio.user_id).first()
+
+## What still needs work
+- Understanding writing models syntax
+- Knowing when a column can be forced to be unique
+    - Only when you know that only thing can have one of this
+
+# 2026-06-18
+
+## What I did today
+- Wrote the Pydantic schemas for Holding (HoldingCreate, HoldingResponse) and Portfolio (PortfolioCreate, PortfolioResponse)
+- Wrote POST and GET endpoints for /portfolios with JWT auth + user filtering
+- Used curl to test JWT auth and user filtering
+
+## What I didn't know before
+- Input schemas should not include server-controlled fields in order to prevent unauthorized users from accessing other users
+-.filter(Portfolio.user_id == current_user.id) is a security boundary to filter out other users
+- On response schemas we need from_attributes=True (ConfigDict) to allow Pydantic to read fields off our SQLAlchemy models
+- 201 Created vs 200 OK is that 201 is for successful POST that creates something
+
+## What still needs work
+- Understanding Class-vs-instance, mentally check code you're writing
+- Mentally compiling code and thinking through solutions
+- Remember from_attributes=True
+- SQLAlchemy queries return a Query object, not a list — need .all() to actually execute and get the list 

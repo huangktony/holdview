@@ -113,3 +113,14 @@
 - User enumeration: an attack where error messages reveal which accounts exist. Defense: return the same generic error for "wrong password" and "no such user."
 - Salt (cryptography): random data added to a password before hashing. Ensures two users with the same password get different hashes. Embedded in bcrypt's output.
 - Defense in depth: layered security — multiple independent checks (signature, expiration, user existence) so no single failure compromises the system.
+
+# 2026-06-14
+- Foreign key — A database constraint where one table's column must reference an existing row's primary key in another table. Both connects the tables and enforces integrity.
+- Cardinality — The "how many on each side" of a relationship. One-to-many, one-to-one, many-to-many.
+- One-to-many — One row in table A is related to many rows in table B. Example: one user has many portfolios.
+- relationship() (SQLAlchemy) — A Python-side accessor that lets you traverse a foreign-key relationship as an attribute (portfolio.user, user.portfolios) instead of writing a manual query. Issues a JOIN under the hood.
+- back_populates — A string parameter on relationship() that names the inverse attribute on the other class. Tells SQLAlchemy that two relationship() calls are two ends of the same relationship, so mutations on one side update the other side in memory.
+- Forward reference (Python / SQLAlchemy) — Using a class name as a quoted string in a type hint (Mapped["User"]) so it can be resolved later. Used to avoid circular imports when two classes reference each other.
+- Numeric / Decimal (financial data) — Database type for exact base-10 arithmetic. Used for money and other values where rounding errors would cause bugs. Pairs with Python's Decimal type. Senior pattern: never use floats for money.
+- Circular import — When module A imports module B and module B imports module A, neither can finish loading. Resolved with deferred imports or forward references.
+- Composite unique constraint — A uniqueness rule across multiple columns together, like "no two rows can have the same (portfolio_id, symbol)." Defined at the table level, not per-column.

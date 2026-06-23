@@ -17,3 +17,4 @@ class Portfolio(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     user: Mapped["User"] = relationship(back_populates="portfolios")
     holdings: Mapped[list["Holding"]] = relationship(back_populates="portfolio")
+    statements: Mapped[list["Statement"]] = relationship(back_populates="portfolio")

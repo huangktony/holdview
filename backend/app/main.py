@@ -1,20 +1,32 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from uuid import uuid4
+from pathlib import Path
 import jwt
 
 from app.db.database import get_db
 from app.models.user import User
+from app.models.holding import Holding
+from app.models.portfolio import Portfolio
+from app.models.statement import Statement
 from app.schemas.user import UserCreate, UserResponse
 from app.schemas.auth import LoginRequest, TokenResponse
+from app.schemas.portfolio import PortfolioCreate, PortfolioResponse
+from app.schemas.holding import HoldingCreate, HoldingResponse
+from app.schemas.statement import StatementResponse
 from app.core.security import create_access_token, decode_access_token
+
 
 import bcrypt
 
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+MAX_FILE_SIZE = 10 * 1024 * 1024 # 10 MB
+UPLOAD_DIR = Path("uploads/statements")
 
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -84,3 +96,92 @@ def get_current_user(
 @app.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+@app.post("/portfolios", response_model=PortfolioResponse, status_code=status.HTTP_201_CREATED)
+def create_portfolio(
+    portfolio: PortfolioCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    new_portfolio = Portfolio(name=portfolio.name, user_id=current_user.id)
+    db.add(new_portfolio)
+
+    db.commit()
+    
+    db.refresh(new_portfolio)
+    return new_portfolio
+
+@app.get("/portfolios", response_model=list[PortfolioResponse])
+def list_portfolios(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    portfolios = db.query(Portfolio).filter(Portfolio.user_id == current_user.id).all()
+    return portfolios
+
+def get_user_portfolio(
+    portfolio_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Portfolio:
+    portfolio = db.query(Portfolio).filter(
+        Portfolio.id == portfolio_id,
+        Portfolio.user_id == current_user.id,
+    ).first()
+    if portfolio is None:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    return portfolio
+
+@app.post("/portfolios/{portfolio_id}/holdings", response_model=HoldingResponse, status_code=status.HTTP_201_CREATED)
+def create_holding(
+    holding: HoldingCreate,
+    portfolio: Portfolio = Depends(get_user_portfolio),
+    db: Session = Depends(get_db),
+
+):
+    
+    new_holding = Holding(symbol=holding.symbol, shares=holding.shares, portfolio_id=portfolio.id)
+
+    db.add(new_holding)
+
+    db.commit()
+
+    db.refresh(new_holding)
+    return new_holding
+
+@app.get("/portfolios/{portfolio_id}/holdings", response_model=list[HoldingResponse])
+def list_holdings(
+    portfolio: Portfolio = Depends(get_user_portfolio),
+    db: Session = Depends(get_db),
+):  
+    return db.query(Holding).filter(Holding.portfolio_id == portfolio.id).all()
+
+@app.post("/portfolios/{portfolio_id}/statements", response_model=StatementResponse, status_code=status.HTTP_201_CREATED)
+async def upload_statement(
+    file: UploadFile = File(...),
+    portfolio: Portfolio = Depends(get_user_portfolio),
+    db: Session = Depends(get_db),
+):
+    if not file.content_type == "application/pdf":
+        raise HTTPException(status_code=400, detail="File is not a PDF")
+    
+    contents = await file.read()
+
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="File too large (> 10 MB)")
+
+
+    storage_path = UPLOAD_DIR / f"{uuid4()}.pdf"
+
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    storage_path.write_bytes(contents)
+
+    new_statement = Statement(portfolio_id=portfolio.id, original_filename=file.filename, storage_path=str(storage_path), file_size=len(contents))
+    
+    db.add(new_statement)
+
+    db.commit()
+
+    db.refresh(new_statement)
+    return new_statement
+    
