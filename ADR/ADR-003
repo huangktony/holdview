@@ -1,0 +1,31 @@
+# ADR-003: Parser architecture
+
+## Context
+
+Our PDF parser needs to cleanly extract holding data: shares and ticker symbol based on Robinhood brokerage format.
+
+## Decision
+
+Library: pdfplumber.
+- Cleanly extracts text from Robinhood statements but realized that it doesn't detect tables.
+- We tried table extraction first via extract_tables() which didnt return anything since it's just text positioned. 
+- Switched to text extraction via extract_text() which gives us text  suitable for parsing.
+
+Approach: text extraction then line-by-line parsing each token
+- Same structure every holding so this makes it very easy
+
+Function signature: def parse_robinhood_statement(file_path: str) -> list[ParsedHolding]
+
+Failure: raised ParseError which will be a custom exception
+- Catches and updates the status of the statement (Statement.status = "failed")
+- Also keeping original PDF for future debugging purposes + storing error message in new column
+
+Trigger for parser: sync inline with upload_statement endpoint
+- If latency for parsing gets too long then move it to background async.
+
+Holding update strategy: Replace it. 
+- On successful parse, replace all existing previous data with the newly parsed data. Simplest way to go about it for now.
+- In the future, maybe per-statement Holdings for past timeline comparisons.
+
+## Status
+Accepted

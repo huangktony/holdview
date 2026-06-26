@@ -138,3 +138,24 @@
 - Mentally compiling code and thinking through solutions
 - Remember from_attributes=True
 - SQLAlchemy queries return a Query object, not a list — need .all() to actually execute and get the list 
+
+# 2026-06-21
+
+## What I did today
+- Built endpoints POST/GET for holdings with ownership verification
+- Refactored ownership check as a reusable dependency (get_user_portfolio)
+- Created Statement model + Pydantic schema
+- Built endpoint for Statement PDF upload with ownership verification + max file size + content verification + UUID storage
+
+## What I didn't know before
+- 404 vs 403: returning 403 leaks data that the item exists but 404 keeps information hidden from attackers
+- When you load an object through ownership check, don't use user input rather information pulled from object itself (acts as defense)
+- Create a dependency for code repeated in multiple endpoints
+
+## What still needs work
+- Leaving dead code after refactoring
+- Look at Robinhood PDF
+- Understanding when async def is required 
+- Pydantic schema vs SQLAlchemy models are not the same
+    - Pydantic schema defines what can come in through the API request body
+    - SQLAlchemy model defines what goes into the database

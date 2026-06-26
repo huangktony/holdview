@@ -265,3 +265,145 @@ class Solution {
 
 - Sortedness makes this work because you always know which direction to move inward. 
 - Without sorted values you have no way to choose which direction
+
+# 2026-06-23
+
+# Container With Most Water
+
+## Signal
+
+- Optimize a value (area, distance, etc.) formed from two values endpoints of an array, where one limiter can only get worse as pointers move inward.
+
+## Pattern
+
+- Two pointers from opposite ends moving inwards looking to find largest area using those heights
+
+## Code Template
+
+class Solution {
+    public int maxArea(int[] heights) {
+        int left = 0;
+        int right = heights.length-1;
+        int largest = 0;
+
+        while(left < right){
+            int width = right-left;
+            int leftHeight = heights[left];
+            int rightHeight = heights[right];
+            int lowestHeight = Math.min(leftHeight, rightHeight);
+            largest = Math.max(largest, lowestHeight * width);
+            if(leftHeight < rightHeight){
+                left++;
+            }
+            else{
+                right--;
+            }
+
+        }
+
+        return largest;
+    }
+}
+
+## Trick
+- Move the limiting pointer inward, never the taller one because width will only get worse going inward
+- Also need to use the smallest vertical height
+
+# 2026-06-23
+
+# 3Sum
+
+## Signal
+
+- Find all unique combinations in an array that satisfy some sum/target. Recognize when you need to fix one element and search for the rest in a two-sum pattern
+
+## Pattern
+
+- Sort array first. Outer for-loop finds one element nums[i] to target. Inner two-pointer searches the subarray (i+1, nums.length-1) for the other two values that sum up to -target. The outer loop picks target, inner while loop finds the other two.
+
+## Code Template
+
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> tripleList = new ArrayList<>();
+        Arrays.sort(nums);
+        int numsSize = nums.length;
+        for(int i = 0; i < numsSize - 2; i++){
+            int target = -nums[i];
+            if (i > 0 && nums[i] == nums[i-1]) continue;
+            int left = i+1;
+            int right = numsSize - 1;
+            while(left < right){
+                if(nums[left] + nums[right] == target){
+                    List<Integer> triple = new ArrayList<>();
+                    triple.add(nums[i]);     
+                    triple.add(nums[left]);
+                    triple.add(nums[right]);
+                    tripleList.add(triple);
+                    left++;
+                    right--;
+                    while (left < right && nums[left] == nums[left-1]) left++;
+                    while (left < right && nums[right] == nums[right+1]) right--;
+                }
+                else if(nums[left] + nums[right] < target){
+                    left++;
+                }
+                else{
+                    right--;
+                }
+            }
+        }
+        return tripleList;
+    }
+}
+
+## Trick
+
+- Advancing both pointers to avoid duplicate numbers
+- Need to have the array sorted
+
+## Lesson
+
+- When stuck, don't rewrite working code. Identify what's missing, add it, leave the rest alone.
+
+# 2026-06-25
+
+# Best Time to Buy and Sell Stock
+
+## Signal
+
+- Go through an array and track the min and max, in this case the lowest buy highest sell
+
+## Pattern
+
+- Two pointers move to the right together. Then once the right hits a smaller min, left jumps to the right pointer. Right keeps moving forward. 
+
+## Code Template
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int left = 0;
+        int right = 0;
+        int largestProfit = 0;
+
+        while(right < prices.length){
+            int currentLeft = prices[left];
+            int currentRight = prices[right];
+            if(currentRight < currentLeft){
+                left = right;
+            }
+            else{
+                largestProfit = Math.max(largestProfit, currentRight - currentLeft);
+            }
+
+            right++;
+        }
+
+        return largestProfit;
+    }
+}
+
+## Trick
+
+- Left jumps to the right pointer, does not slide with it
+- O(N) since we don't always check every buy against every sell. Only checks our current min to the values to the right
