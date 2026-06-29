@@ -159,3 +159,16 @@
 - Pydantic schema vs SQLAlchemy models are not the same
     - Pydantic schema defines what can come in through the API request body
     - SQLAlchemy model defines what goes into the database
+
+# 2026-06-27
+
+## What I did today
+- pdfplumber exploration on a real Robinhood brokerage PDF
+- Accepted ADR-003
+
+## What I didn't know before
+- Sometimes pdfplumber's extract_tables() does not work on Robinhood's format. To compensate use text then parse by each line
+
+## What still needs work
+- Have not yet implemented proper parsing yet
+- Understand and have sound reasoning for implementation details (Replace vs Append vs Merge decision on new statement uploads)

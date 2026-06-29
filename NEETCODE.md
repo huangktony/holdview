@@ -407,3 +407,47 @@ class Solution {
 
 - Left jumps to the right pointer, does not slide with it
 - O(N) since we don't always check every buy against every sell. Only checks our current min to the values to the right
+
+# Longest Substring Without Repeating Characters
+
+## Signal
+
+- Find the longest/shortest sequence within an array or string that satisfies a property. 
+
+## Pattern
+
+- Outer loop / right side of window keeps advancing forward making the window bigger
+- Inner loop / left side of window contracts whenever we violate the proper
+- Record the state of our window every iteration
+
+## Code Template
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int left = 0;
+        int right = 0;
+        int longest = 0;
+        Set<Character> charSet = new HashSet<>();
+
+        while(right < s.length()){
+            if(!charSet.add(s.charAt(right))){
+                while(charSet.contains(s.charAt(right))){
+                    charSet.remove(s.charAt(left));
+                    left++;
+                }
+            }
+            
+            charSet.add(s.charAt(right));
+            longest = Math.max(longest, right - left + 1);
+            right++;
+        }
+
+        return longest;
+    }
+}
+
+## Trick
+- Left slides forward (compared to two pointer which jumps) like a window
+- HashSet tracks what's in the window, O(1) lookups
+- Record the longest version unconditionally after each window expansion
+- Buy/Sell Stock: left jumps to right when a new min appears. This problem: left slides forward (sometimes multiple positions) to remove a duplicate. Both are sliding window, mechanically different.

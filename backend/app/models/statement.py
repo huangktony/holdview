@@ -17,3 +17,4 @@ class Statement(Base):
     file_size: Mapped[int] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     portfolio: Mapped["Portfolio"] = relationship(back_populates="statements")
+    error_message: Mapped[str | None] = mapped_column(nullable=True)
