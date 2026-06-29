@@ -18,6 +18,9 @@ from app.schemas.portfolio import PortfolioCreate, PortfolioResponse
 from app.schemas.holding import HoldingCreate, HoldingResponse
 from app.schemas.statement import StatementResponse
 from app.core.security import create_access_token, decode_access_token
+from app.services.parsers.types import ParsedHolding, ParseError
+from app.services.parsers.robinhood import parse_robinhood_statement
+
 
 
 import bcrypt
@@ -181,6 +184,20 @@ async def upload_statement(
     db.add(new_statement)
 
     db.commit()
+
+    db.refresh(new_statement)
+
+    try:
+        parsed_holdings = parse_robinhood_statement(storage_path)
+        db.query(Holding).filter(Holding.portfolio_id == portfolio.id).delete()
+        for parsed_holding in parsed_holdings:
+            db.add(Holding(symbol=parsed_holding.symbol, shares=parsed_holding.shares, portfolio_id=portfolio.id))
+        new_statement.status = "parsed"
+        db.commit()
+    except ParseError as e:
+        new_statement.status = "failed"
+        new_statement.error_message = str(e)
+        db.commit()
 
     db.refresh(new_statement)
     return new_statement
