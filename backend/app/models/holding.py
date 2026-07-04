@@ -15,3 +15,5 @@ class Holding(Base):
     shares: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     portfolio: Mapped["Portfolio"] = relationship(back_populates="holdings")
+    price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    mkt_value: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)

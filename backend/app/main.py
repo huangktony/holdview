@@ -1,3 +1,4 @@
+from decimal import Decimal, ROUND_HALF_UP
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -17,6 +18,7 @@ from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.portfolio import PortfolioCreate, PortfolioResponse
 from app.schemas.holding import HoldingCreate, HoldingResponse
 from app.schemas.statement import StatementResponse
+from app.schemas.analysis import AnalysisItem, PortfolioAnalysisResponse
 from app.core.security import create_access_token, decode_access_token
 from app.services.parsers.types import ParsedHolding, ParseError
 from app.services.parsers.robinhood import parse_robinhood_statement
@@ -191,7 +193,7 @@ async def upload_statement(
         parsed_holdings = parse_robinhood_statement(storage_path)
         db.query(Holding).filter(Holding.portfolio_id == portfolio.id).delete()
         for parsed_holding in parsed_holdings:
-            db.add(Holding(symbol=parsed_holding.symbol, shares=parsed_holding.shares, portfolio_id=portfolio.id))
+            db.add(Holding(symbol=parsed_holding.symbol, shares=parsed_holding.shares, price=parsed_holding.price, mkt_value=parsed_holding.mkt_value, portfolio_id=portfolio.id))
         new_statement.status = "parsed"
         db.commit()
     except ParseError as e:
@@ -201,4 +203,26 @@ async def upload_statement(
 
     db.refresh(new_statement)
     return new_statement
+
+@app.get("/portfolios/{portfolio_id}/analysis", response_model=PortfolioAnalysisResponse)
+def get_portfolio_analysis(
+    portfolio: Portfolio = Depends(get_user_portfolio),
+    db: Session = Depends(get_db),
+):
+    holdings_with_val = db.query(Holding).filter(Holding.portfolio_id == portfolio.id, Holding.mkt_value.is_not(None)).all()
+
+    if not holdings_with_val:
+        return PortfolioAnalysisResponse(total_mkt_value=Decimal("0"), items=[])
+    
+    total_mkt_value = sum(holding.mkt_value for holding in holdings_with_val)
+    
+    analysis_list = []
+    for holding in holdings_with_val:
+        pct_of_portfolio = (holding.mkt_value / total_mkt_value).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+        new_analysis = AnalysisItem(symbol=holding.symbol, mkt_value=holding.mkt_value, pct_of_portfolio=pct_of_portfolio)
+        analysis_list.append(new_analysis)
+
+    analysis_list.sort(key=lambda item: item.pct_of_portfolio, reverse=True)
+
+    return PortfolioAnalysisResponse(total_mkt_value=total_mkt_value, items=analysis_list)
     

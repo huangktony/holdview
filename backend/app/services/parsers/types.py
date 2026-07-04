@@ -5,6 +5,8 @@ from decimal import Decimal
 class ParsedHolding:
     symbol: str
     shares: Decimal
+    price: Decimal
+    mkt_value: Decimal
 
 class ParseError(Exception):
     pass

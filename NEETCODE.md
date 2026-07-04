@@ -451,3 +451,103 @@ class Solution {
 - HashSet tracks what's in the window, O(1) lookups
 - Record the longest version unconditionally after each window expansion
 - Buy/Sell Stock: left jumps to right when a new min appears. This problem: left slides forward (sometimes multiple positions) to remove a duplicate. Both are sliding window, mechanically different.
+
+# 2026-06-30
+
+# Longest Repeating Character Replacement
+
+## Signal
+
+- Find the biggest/smallest sequence within an array/string that matches a criteria
+
+## Pattern
+
+- Variable-sized window with a invariant limit of k
+
+## Code Template 
+
+class Solution {
+    public int characterReplacement(String s, int k) {
+        int mostFreq = 0;
+        int longest = 0;
+        int left = 0;
+        int right = 0;
+        int[] charFreq = new int[26];
+
+        while(right < s.length()){
+            charFreq[s.charAt(right) - 'A']++;
+            mostFreq = Math.max(mostFreq, charFreq[s.charAt(right) - 'A']);
+            while((right - left + 1) - mostFreq > k){
+                charFreq[s.charAt(left) - 'A']--;
+                left++;
+            }
+            longest = Math.max(longest, right - left + 1);
+            right++;
+        }
+
+        return longest;
+    }
+}
+
+
+## Trick
+
+- You don't decrease maxCount this is because it's monotonically non-decreasing
+- Need to internalize this, I'm not sure of this yet 
+- Compared to Longest Substring: that one's invariant is 'no repeats.' This one's invariant is 'can be made uniform with ≤k replacements.' Different invariants, same variable-window pattern.
+
+# 2026-07-02
+
+# Permutation in String
+
+## Signal
+
+- Check if a substring/subarray with a known fixed size window matches some kind of criteria, at any position. 
+
+## Pattern
+
+- Fixed window size, should be moving left and right pointers at the same time keeping the same size.
+- Every time you should add the right remove the left
+- Don't need left variable can just figure out by doing right - fixedSize
+
+## Code Template 
+
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        if (s1.length() > s2.length()) return false;
+
+
+        int[] s1Freq = new int[26];
+        int[] s2Freq = new int[26];
+ 
+        for(int i = 0; i < s1.length(); i++){
+            s1Freq[s1.charAt(i) - 'a']++;
+            s2Freq[s2.charAt(i) - 'a']++;
+        }
+
+        if(Arrays.equals(s2Freq, s1Freq)){
+            return true;
+        }
+
+
+        for(int right = s1.length(); right < s2.length(); right++){
+            s2Freq[s2.charAt(right) - 'a']++;
+            s2Freq[s2.charAt(right - s1.length()) - 'a']--;
+            if(Arrays.equals(s2Freq, s1Freq)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+## Trick
+
+- Compared to variable size: You don't expand right and contract the left once you hit an invalid variant
+- In fixed-size: You should be doing symmetric movements and expand right then contract left.
+
+- If problem specifies window size: fixed
+- Asked you to find the window size: variable
+
+- Arrays.equals(a, b) for content comparison 

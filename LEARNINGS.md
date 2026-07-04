@@ -172,3 +172,19 @@
 ## What still needs work
 - Have not yet implemented proper parsing yet
 - Understand and have sound reasoning for implementation details (Replace vs Append vs Merge decision on new statement uploads)
+
+# 2026-06-28
+
+## What I did today
+- Wired up PDF parser with upload_statement endpoint, added try and except body for PDF parsing
+- Finished end-to-end Robinhood statement upload to parsing to loading db
+- Wrote PDF parsing dataclass + added Statement error_message
+- Debugged the PDF parser as first page hits "Total Securities" our chosen terminator
+
+## What I didn't know before
+- dataclasses in Python
+
+## What still needs work
+- Understanding try/except blocks
+- Learn dataclasses 
+- Fimiliarize with pdfplumber

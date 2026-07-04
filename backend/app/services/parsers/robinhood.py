@@ -20,7 +20,9 @@ def parse_robinhood_statement(file_path: str) -> list[ParsedHolding]:
                     return parsed_list
                 if in_holdings:
                     tokens = line.split()
-                    if len(tokens) >= 3 and tokens[1] in ("Margin", "Cash"):
-                        new_parse = ParsedHolding(symbol=tokens[0], shares=Decimal(tokens[2]))
+                    if len(tokens) >= 5 and tokens[1] in ("Margin", "Cash"):
+                        parsed_price = Decimal(tokens[3].lstrip('$').replace(',', ''))
+                        parsed_mkt_value = Decimal(tokens[4].lstrip('$').replace(',', ''))
+                        new_parse = ParsedHolding(symbol=tokens[0], shares=Decimal(tokens[2]), price=parsed_price, mkt_value=parsed_mkt_value)
                         parsed_list.append(new_parse)
         raise ParseError("Holdings section terminator not found")
