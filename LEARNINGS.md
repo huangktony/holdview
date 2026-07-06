@@ -188,3 +188,21 @@
 - Understanding try/except blocks
 - Learn dataclasses 
 - Fimiliarize with pdfplumber
+
+# 2026-07-03
+
+## What I did today
+- Added price and mkt_value to Holding
+- ParsedHolding and upload_statement extended to include mkt_value and price for concentration analysis
+- Added new AnalysisItem and PortfolioAnalysisResponse schemas
+- New concentration analysis endpoint 
+
+## What I didn't know before
+- Pulling from an external API changes our scale a lot
+- Pydantic schemas are different from SQLAlchemy models
+- Empty is not an error
+
+## What still needs work
+- Being able to make sound design choices
+- Understand what the differences between Pydantic schemas and SQLAlchemy models and when to use what
+- When to use model_config = ConfigDict(from_attributes=True)

@@ -551,3 +551,139 @@ class Solution {
 - Asked you to find the window size: variable
 
 - Arrays.equals(a, b) for content comparison 
+
+# 2026-07-04
+
+# Valid Parentheses
+
+## Signal
+- Match something (closing parentheses) to the most recent unmatched thing (opening parentheses)
+
+## Pattern
+- Push the opening to the stack, then when the closing appears, make sure the stack isn't empty, then check the top of stack to find match
+- At the end if the stack is empty, then whole thing is valid
+
+## Code Template
+class Solution {
+    public boolean isValid(String s) {
+        Deque<Character> stack = new ArrayDeque<>();
+        String open = "({[";
+        
+        for (int i = 0; i < s.length(); i++) {
+            char curr = s.charAt(i);
+            
+            if (open.indexOf(curr) != -1) {
+                stack.push(curr);
+            } 
+            else {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+                char removed = stack.pop();
+                if (curr == '}' && removed != '{') {
+                    return false;
+                }
+                else if (curr == ')' && removed != '(') {
+                    return false;
+                }
+                else if (curr == ']' && removed != '[') {
+                    return false;
+                }
+            }
+        }
+        
+        return stack.isEmpty();
+    }
+}
+
+## Trick 
+- Three failures: closing bracket with nothing in stack, closing bracket with no matching opener, leftover openers at the end
+- Use Deque<T> with ArrayDeque to represent stack in Java
+
+# 2026-07-04
+
+# Min Stack
+
+## Signal
+- Design a stack that supports querying on some kind of factor (max, min, etc.) in O(1) timing
+
+## Pattern
+- Keep another stack in parallel to the main stack
+- The auxiliary stack tracks values for your O(1) support query by history of answers for each version of main-stack
+
+## Code Template
+
+cclass MinStack {
+    private Deque<Integer> stack;
+    private Deque<Integer> minStack;
+
+    public MinStack() {
+        stack = new ArrayDeque<>();
+        minStack = new ArrayDeque<>();
+    }
+    
+    public void push(int val) {
+        stack.push(val);
+        if (minStack.isEmpty() || val <= minStack.peek()) {
+                minStack.push(val);
+        }
+    }
+    
+    public void pop() {
+        int popped = stack.pop();
+        if(minStack.peek() == popped){
+            minStack.pop();
+        }
+    }
+    
+    public int top() {
+        return stack.peek();
+    }
+    
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+
+## Trick
+- Use <= when pushing to the aux stack because we don't want to lose the minimum too early if there's multiple of them
+- Empty check before peeking the aux stack preventing crash
+- Compare with .equals vs. ==, which may bug out 
+- Aux keeps track of answers throughout main stack history
+
+# 2026-07-04
+
+# Daily Temperatures
+
+## Signal
+- Go through an array and for each element find the next greater/smaller thing
+- "for each" + "next [greater/smaller]"
+
+## Pattern
+- Stack of indices for the elements that are still waiting for an answer
+- As you scan, pop indices off as you find an answer for them. Keep pushing current unresolved items
+
+## Code Template
+
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        Deque<Integer> waiting = new ArrayDeque<>();
+        int[] daysWaited = new int[temperatures.length];
+        for(int i = 0; i < temperatures.length; i++){
+            while(!waiting.isEmpty() && temperatures[i] > temperatures[waiting.peek()]){
+                int poppedIndex = waiting.pop();
+                daysWaited[poppedIndex] = i - poppedIndex;
+            }
+            waiting.push(i);
+        }
+
+        return daysWaited;
+    }
+}
+
+## Trick
+- Stack holds the indices but the comparisons are still using values from original array
+- Monotonic decreasing invariant is kept because you pop everything that you currently solved before pushing.
+    - So top stays the warmest day
+- Java's default initialization for int[] makes default values 0 handling never resolved cases
+- Stack = waiting list of unresolved items 

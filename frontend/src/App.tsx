@@ -1,19 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react';
+import { LoginPage } from './LoginPage';
 
 function App(){
-  const[message, updateMessage] = useState("")
+  const[token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch('http://localhost:8000/')
-    .then(response => response.json())
-    .then(data => updateMessage(data.message))
-  }, [])
+  if(token === null){
+    return <LoginPage onLogin={setToken} />;
+  }
 
-  return(
-    <div>
-      {message}
-    </div>
-  )
+  return <p>Logged in!</p>;
 
 }
 
