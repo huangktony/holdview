@@ -206,3 +206,27 @@
 - Being able to make sound design choices
 - Understand what the differences between Pydantic schemas and SQLAlchemy models and when to use what
 - When to use model_config = ConfigDict(from_attributes=True)
+
+# 2026-07-04
+
+## What I did today
+- Learning Stack pattern, hit 3 problems on Neetcode (parsing, auxilary parallel stack, monotonic)
+- Work on familiarity, learned that I need to relook at patterns
+- Resume updated with Holdview and honest quantifiers
+- First assessment invite from Bank of America
+
+# 2026-07-05
+
+## What I did today
+- Built API client function reusable to handle backend communication for frontend components
+- Added the LoginPage for my frontend working to login and update token state
+- Token state handled by being stored on React App
+
+## What I didn't know before
+- Options object
+- Why we needed a APIClient function
+- try catch blocks need an await inside to catch any errors or else the try block just runs through right away
+
+## What still needs work
+- Understanding JavaScript/TypeScript Syntax
+- Getting better at thinking through code and ask more clarifying questions 
