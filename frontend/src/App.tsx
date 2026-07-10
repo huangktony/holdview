@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LoginPage } from './LoginPage';
+import { PortfolioList  } from './PortfolioList';
 
 function App(){
   const[token, setToken] = useState<string | null>(null);
@@ -8,7 +9,7 @@ function App(){
     return <LoginPage onLogin={setToken} />;
   }
 
-  return <p>Logged in!</p>;
+  return <PortfolioList token={token} />;
 
 }
 

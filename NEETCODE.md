@@ -687,3 +687,22 @@ class Solution {
     - So top stays the warmest day
 - Java's default initialization for int[] makes default values 0 handling never resolved cases
 - Stack = waiting list of unresolved items 
+
+# 2026-07-08
+
+# Fast-Slow Pointer
+
+## Signal
+- When given a linked list, in one pass so O(N) time and O(1) space: detect if there's a cycle, find the middle of the linked list, find nth from end, etc. 
+
+## Pattern
+- You start two pointers from the head of the linked list; the slow pointer moves 1 node at a time and the fast one moves 2 until null.
+- If they ever meet then theres a cycle
+
+## Trick
+- The loop should keep going if fast != null and the fast.next != null
+- Fast jumps twice so both need to exist
+
+## Compared to the HashSet approach
+- HashSet uses O(N) space vs. Fast-Slow pointers O(1)
+- They are the same speed but it wins in space
