@@ -1,13 +1,13 @@
 // src/PortfolioList.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, } from "react";
 import { apiFetch } from "./api";
 
-type Portfolio = {
+export type Portfolio = {
   id: number;
   name: string;
 };
 
-export function PortfolioList({ token }: { token: string }) {
+export function PortfolioList({ token, onSelect }: { token: string; onSelect: (p: Portfolio) => void }) {
   // YOU: two pieces of state — the portfolios list, and a loading flag
   const[portfolios, updatePortfolios] = useState<Portfolio[]>([]);
   const[loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ export function PortfolioList({ token }: { token: string }) {
         const data = await apiFetch("/portfolios", {}, token);
         updatePortfolios(data);
       } catch (e){
-            setError("No portfolios found");
+        setError("No portfolios found");
       } finally {
         setLoading(false);
       }
@@ -41,7 +41,11 @@ export function PortfolioList({ token }: { token: string }) {
     <div>
       <h2>Your Portfolios</h2>
       <ul>
-        {portfolios.map((portfolio) => <li key={portfolio.id}>{portfolio.name}</li>)}
+        {portfolios.map((portfolio) => (
+          <li key={portfolio.id}>
+            <button onClick={() => onSelect(portfolio)}>{portfolio.name}</button>
+          </li>
+        ))}
       </ul>
     </div>
   );
