@@ -16,7 +16,13 @@ function App(){
     return <PortfolioList token={token} onSelect={setSelectedPortfolio} />;
   }
 
-   return <HoldingsList token={token} portfolio={selectedPortfolio} />;
+   return (
+    <HoldingsList 
+      token={token} 
+      portfolio={selectedPortfolio} 
+      onBack={() => setSelectedPortfolio(null)}
+    />
+   );
 }
 
 export default App

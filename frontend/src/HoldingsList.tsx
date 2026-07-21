@@ -13,7 +13,7 @@ type Holding = {
     created_at: string;
 };
 
-export function HoldingsList({token, portfolio}: {token: string; portfolio: Portfolio}){
+export function HoldingsList({token, portfolio, onBack}: {token: string; portfolio: Portfolio, onBack: () => void}){
     const[holdings, updateHoldings] = useState<Holding[]>([]);
     const[loading, setLoading] = useState(true);
     const[error, setError] = useState("");
@@ -42,20 +42,24 @@ export function HoldingsList({token, portfolio}: {token: string; portfolio: Port
     }
 
     return (
-        <table>
-            <thead>
-                <tr><th>Symbol</th><th>Shares</th><th>Price</th><th>Market Value</th></tr>
-            </thead>
-            <tbody>
-                {holdings.map((h) => (
-                <tr key={h.id}>
-                    <td>{h.symbol}</td>
-                    <td>{h.shares}</td>
-                    <td>{h.price}</td>
-                    <td>{h.mkt_value}</td>
-                </tr>
-                ))}
-            </tbody>
-        </table>
+        <div>
+            <button onClick={onBack}> Back to portfolios </button>
+            <h2>{portfolio.name}</h2>
+            <table>
+                <thead>
+                    <tr><th>Symbol</th><th>Shares</th><th>Price</th><th>Market Value</th></tr>
+                </thead>
+                <tbody>
+                    {holdings.map((h) => (
+                    <tr key={h.id}>
+                        <td>{h.symbol}</td>
+                        <td>{h.shares}</td>
+                        <td>{h.price}</td>
+                        <td>{h.mkt_value}</td>
+                    </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
