@@ -706,3 +706,88 @@ class Solution {
 ## Compared to the HashSet approach
 - HashSet uses O(N) space vs. Fast-Slow pointers O(1)
 - They are the same speed but it wins in space
+
+# 2026-07-23
+
+# Binary Search
+
+## Signal
+- When an array is sorted and we want to search, usually the N is too large.
+
+## Pattern
+- Start with left and right at opposite ends calculate the middle. Check whether or not that's the value you're looking for or which half you need to head. Repeat.
+
+## Code Template
+
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length-1;
+        while(left <= right){
+            int middle = left + (right-left) / 2;
+            if(nums[middle] == target){
+                return middle;
+            }
+            else if(nums[middle] > target){
+                right = middle-1;
+            }
+            else{
+                left = middle+1;
+            }
+        }
+        return -1;
+    }
+}
+
+## Trick
+- Want to avoid overflow so do mid = left + (right - left)/2
+- left <= right pairs with left=mid+1 and right=mid-1, guarantees space shrinks so no inf loop
+- left < right pairing with right=mid is used to find the first element satisfying a condition
+- Loop exits when left > right, meaning the search space is empty — every element has been eliminated, so -1 is proven, not guessed.
+
+# 2026-07-25
+
+# Koko Eating Bananas 
+
+## Signal
+- You're searching for a range of possible answers
+- "minimum/maximum" value where the condition still holds
+- The range is large where you don't want O(n) search instead opt for binary searching
+
+## Pattern
+- Define the search space with a range (min possible, max possible), should be derived from reading the problem
+- Check for feasibility where this answer is what you're looking for
+- Boundary template: left < right, right = mid, left = mid + 1 whenever our current candidate doesn't fit
+
+## Code Template
+
+class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        int leftRate = 1;
+        int rightRate = 0;
+        int midRate = 0;
+        for(int i = 0; i < piles.length; i++){
+            rightRate = Math.max(rightRate, piles[i]);
+        }
+
+        while(leftRate < rightRate){
+            midRate = leftRate + (rightRate - leftRate)/2;
+            int tempHours = 0;
+            for(int i = 0; i < piles.length; i++){
+                tempHours += (piles[i] + midRate - 1) / midRate;            
+            }
+            if(tempHours > h){
+                leftRate = midRate+1;
+            } else{
+                rightRate = midRate;
+            }
+        }
+
+        return leftRate;
+    }
+}
+
+## Trick
+- Use (a + b - 1)/ b to do integer ceiling
+- Eating more than our biggest pile is wasting rate since we can't move on to another pile after finishing it
+- Feasibility must be monotonic — as the candidate rate increases, "can finish in time" goes false…false…true…true. That monotonicity is what lets you throw away half the range. If the condition weren't monotonic, binary search wouldn't apply.
