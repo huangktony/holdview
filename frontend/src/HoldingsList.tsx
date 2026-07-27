@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { apiFetch } from "./api";
+import { apiFetch, uploadStatement } from "./api";
 import type { Portfolio } from "./PortfolioList";
 
 
@@ -17,6 +17,10 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
     const[holdings, updateHoldings] = useState<Holding[]>([]);
     const[loading, setLoading] = useState(true);
     const[error, setError] = useState("");
+    const[selectedFile, setSelectedFile] = useState<File | null>(null);
+    const[uploading, setUploading] = useState(false);
+    const[uploadError, setUploadError] = useState("");
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         async function load() {
@@ -31,7 +35,23 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
             }
         }
         load();
-    }, [token, portfolio.id]);
+    }, [token, portfolio.id, refreshKey]);
+
+    async function handleUpload() {
+        if(!selectedFile){
+            return;
+        }
+
+        try {
+            setUploading(true);
+            await uploadStatement(portfolio.id, selectedFile, token);
+            setRefreshKey(refreshKey + 1);
+        } catch {
+            setUploadError("Upload Failed") ;
+        } finally {
+            setUploading(false);
+        }
+    }
 
     if (loading) {
         return <p>Loading...</p>;
@@ -45,6 +65,18 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
         <div>
             <button onClick={onBack}> Back to portfolios </button>
             <h2>{portfolio.name}</h2>
+
+            <div>
+                <input
+                    type="file"
+                    onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                />
+                <button onClick={handleUpload} disabled={!selectedFile || uploading}>
+                    {uploading ? "Uploading..." : "Upload statement"}
+                </button>
+                {uploadError && <p>{uploadError}</p>}
+            </div>
+
             <table>
                 <thead>
                     <tr><th>Symbol</th><th>Shares</th><th>Price</th><th>Market Value</th></tr>

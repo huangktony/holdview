@@ -17,3 +17,26 @@ export async function apiFetch(
     return response.json();
 }
 
+export async function uploadStatement(
+    portfolioId: number,
+    file: File,
+    token?: string
+) {
+    const headers: Record<string, string> = {};
+    headers["Authorization"] = `Bearer ${token}`;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${BASE_URL}/portfolios/${portfolioId}/statements`, {
+        method: "POST", 
+        headers,
+        body: formData,
+    });
+
+    if(!response.ok){
+        throw new Error(`Request failed: ${response.status}`);
+    }
+
+    return response.json();
+}
