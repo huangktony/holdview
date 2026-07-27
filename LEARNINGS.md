@@ -230,3 +230,19 @@
 ## What still needs work
 - Understanding JavaScript/TypeScript Syntax
 - Getting better at thinking through code and ask more clarifying questions 
+
+# 2026-07-27
+
+## What I did today
+- Finished the file upload feature on our frontend: used multipart form-data (FormData), then wired that with the endpoint
+- Don't set content-type for file uploads
+- refreshKey pattern: you just change a state value in the effect's dependency array to force it to refetch as we changed it
+
+## What I didn't know before
+- How to upload files and how it even ends up in the backend
+- refreshKey pattern
+- How our backend even gets the file the user selects (we store reference to it in our browser)
+
+## What still needs work
+- Understanding JavaScript/TypeScript
+- Coming up with proper and sound solutions even without knowing the concept well
