@@ -3,6 +3,7 @@ import { LoginPage } from './LoginPage';
 import { PortfolioList  } from './PortfolioList';
 import type { Portfolio } from './PortfolioList';
 import { HoldingsList } from './HoldingsList';
+import { AnalysisView } from './AnalysisView';
 
 function App(){
   const[token, setToken] = useState<string | null>(null);

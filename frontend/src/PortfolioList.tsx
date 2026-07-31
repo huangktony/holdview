@@ -28,7 +28,6 @@ export function PortfolioList({ token, onSelect }: { token: string; onSelect: (p
     load();
   }, [token]);
 
-  // YOU: if loading, return a loading message
   if(loading){
     return <p>Loading...</p>
   }

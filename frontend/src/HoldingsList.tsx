@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { apiFetch, uploadStatement } from "./api";
 import type { Portfolio } from "./PortfolioList";
+import { AnalysisView } from "./AnalysisView";
 
 
 type Holding = {
@@ -21,15 +22,16 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
     const[uploading, setUploading] = useState(false);
     const[uploadError, setUploadError] = useState("");
     const [refreshKey, setRefreshKey] = useState(0);
+    const[showAnalysis, setShowAnalysis] = useState(false);
 
     useEffect(() => {
         async function load() {
-        // YOU: try/catch/finally — fetch `/portfolios/${portfolio.id}/holdings` with token
             try{
                 const data = await apiFetch(`/portfolios/${portfolio.id}/holdings`, {}, token);
                 updateHoldings(data);
+                setError("");
             } catch(e){
-                setError("No holdings found");
+                setError("Couldn't load holdings");
             } finally{
                 setLoading(false);
             }
@@ -45,7 +47,8 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
         try {
             setUploading(true);
             await uploadStatement(portfolio.id, selectedFile, token);
-            setRefreshKey(refreshKey + 1);
+            setUploadError("");
+            setRefreshKey(k => k + 1);
         } catch {
             setUploadError("Upload Failed") ;
         } finally {
@@ -57,11 +60,8 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
         return <p>Loading...</p>;
     }
 
-    if (error) {
-        return <p>{error}</p>;
-    }
 
-    return (
+    return (    
         <div>
             <button onClick={onBack}> Back to portfolios </button>
             <h2>{portfolio.name}</h2>
@@ -77,21 +77,33 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
                 {uploadError && <p>{uploadError}</p>}
             </div>
 
-            <table>
-                <thead>
-                    <tr><th>Symbol</th><th>Shares</th><th>Price</th><th>Market Value</th></tr>
-                </thead>
-                <tbody>
-                    {holdings.map((h) => (
-                    <tr key={h.id}>
-                        <td>{h.symbol}</td>
-                        <td>{h.shares}</td>
-                        <td>{h.price}</td>
-                        <td>{h.mkt_value}</td>
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div>
+                <button onClick={() => setShowAnalysis(!showAnalysis)}>
+                {showAnalysis ? "Show Holdings Table" : "Show Portfolio Analysis"}
+                </button>
+            </div>
+
+            {showAnalysis ? (
+                <AnalysisView token={token} portfolio={portfolio} refreshKey={refreshKey} />
+            ) : (error ? <p>{error}</p> :
+                holdings.length === 0 ? <p>There are no current holdings</p> : (
+                <table>
+                    <thead>
+                        <tr><th>Symbol</th><th>Shares</th><th>Price</th><th>Market Value</th></tr>
+                    </thead>
+                    <tbody>
+                        {holdings.map((h) => (
+                        <tr key={h.id}>
+                            <td>{h.symbol}</td>
+                            <td>{h.shares}</td>
+                            <td>{h.price}</td>
+                            <td>{h.mkt_value}</td>
+                        </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ))}
+
         </div>
     );
 }
