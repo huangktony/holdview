@@ -13,7 +13,7 @@ type Analysis = {
     items: AnalysisItem[];
 };
 
-export function AnalysisView({ token, portfolio }: { token: string; portfolio: Portfolio; refreshKey: number}) {
+export function AnalysisView({ token, portfolio, refreshKey}: { token: string; portfolio: Portfolio; refreshKey: number}) {
     const [analysis, setAnalysis] = useState<Analysis | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -23,15 +23,16 @@ export function AnalysisView({ token, portfolio }: { token: string; portfolio: P
             try {
                 const data = await apiFetch(`/portfolios/${portfolio.id}/analysis`, {}, token)
                 setAnalysis(data);
+                setError("");
             } catch(e){
-                setError("No analysis found!")
+                setError("Couldn't load analysis.")
             } finally{
                 setLoading(false);
             }
             
         }
         load();
-    }, [token, portfolio.id]);
+    }, [token, portfolio.id, refreshKey]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
