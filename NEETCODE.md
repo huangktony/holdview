@@ -791,3 +791,49 @@ class Solution {
 - Use (a + b - 1)/ b to do integer ceiling
 - Eating more than our biggest pile is wasting rate since we can't move on to another pile after finishing it
 - Feasibility must be monotonic — as the candidate rate increases, "can finish in time" goes false…false…true…true. That monotonicity is what lets you throw away half the range. If the condition weren't monotonic, binary search wouldn't apply.
+
+# 2026-08-06
+
+# Search in Rotated Sorted Array
+
+## Signal
+- Sorted, rotated array -> find a target
+- The array is rotated so it's not globally sorted, can't just use target comparison to pick a side
+
+## Pattern 
+- At each step, one half is always fully sorted as theres only one point where it switches from max to min
+- Identify it first, then range check to see which half
+
+## Code Template
+
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length-1;
+
+        while(left <= right){
+            int mid = left + (right - left)/2;
+            int curValue = nums[mid];
+            if(curValue == target){
+                return mid;
+            } else if(nums[left] <= curValue){
+                if(nums[left] <= target && target < nums[mid]){
+                    right = mid-1;
+                } else {
+                    left = mid+1;
+                }
+            } else {
+                if(nums[mid] < target && target <= nums[right]){
+                    left = mid+1;
+                } else {
+                    right = mid-1;
+                }
+            }
+        }
+        
+        return -1;
+    }
+}
+
+## Trick
+- Never check the messy half directly, use the sorted half to make decisions
