@@ -6,9 +6,23 @@ import type { Portfolio } from './PortfolioList';
 import { HoldingsList } from './HoldingsList';
 
 function App(){
-  const[token, setToken] = useState<string | null>(null);
+  const[token, updateToken] = useState<string | null>(() => localStorage.getItem("token"));
   const[selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const[showRegister, setShowRegister] = useState(false);
+
+  function setToken(newToken: string | null) {
+    if (newToken === null) {
+      localStorage.removeItem("token");
+    } else {
+      localStorage.setItem("token", newToken);
+    }
+    updateToken(newToken);
+  }
+
+  function logout() {
+    setSelectedPortfolio(null);
+    setToken(null);
+  }
 
   if(token === null){
     if (showRegister) {
@@ -21,16 +35,18 @@ function App(){
     }
     return <LoginPage onLogin={setToken} onShowRegister={() => setShowRegister(true)} />;
   }
-  
+
   if(selectedPortfolio === null){
-    return <PortfolioList token={token} onSelect={setSelectedPortfolio} />;
+    return <PortfolioList token={token} onSelect={setSelectedPortfolio} onUnauthorized={logout} onLogout={logout} />;
   }
 
    return (
-    <HoldingsList 
-      token={token} 
-      portfolio={selectedPortfolio} 
+    <HoldingsList
+      token={token}
+      portfolio={selectedPortfolio}
       onBack={() => setSelectedPortfolio(null)}
+      onUnauthorized={logout}
+      onLogout={logout}
     />
    );
 }

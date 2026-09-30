@@ -22,7 +22,8 @@ async function extractErrorMessage(response: Response): Promise<string> {
 export async function apiFetch(
   path: string,
   options: RequestInit = {},
-  token?: string
+  token?: string,
+  onUnauthorized?: () => void
 ) {
     const headers: Record<string, string> = {"Content-Type": "application/json"};
     if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -30,6 +31,9 @@ export async function apiFetch(
     const response = await fetch(`${BASE_URL}` + path, {...options, headers});
 
     if(!response.ok){
+        if (response.status === 401 && token) {
+            onUnauthorized?.();
+        }
         const message = await extractErrorMessage(response);
         throw new Error(message);
     }
@@ -40,7 +44,8 @@ export async function apiFetch(
 export async function uploadStatement(
     portfolioId: number,
     file: File,
-    token: string
+    token: string,
+    onUnauthorized?: () => void
 ) {
     const headers: Record<string, string> = {};
     headers["Authorization"] = `Bearer ${token}`;
@@ -49,13 +54,17 @@ export async function uploadStatement(
     formData.append("file", file);
 
     const response = await fetch(`${BASE_URL}/portfolios/${portfolioId}/statements`, {
-        method: "POST", 
+        method: "POST",
         headers,
         body: formData,
     });
 
     if(!response.ok){
-        throw new Error(`Request failed: ${response.status}`);
+        if (response.status === 401) {
+            onUnauthorized?.();
+        }
+        const message = await extractErrorMessage(response);
+        throw new Error(message);
     }
 
     return response.json();

@@ -14,7 +14,19 @@ type Holding = {
     created_at: string;
 };
 
-export function HoldingsList({token, portfolio, onBack}: {token: string; portfolio: Portfolio, onBack: () => void}){
+export function HoldingsList({
+    token,
+    portfolio,
+    onBack,
+    onUnauthorized,
+    onLogout,
+}: {
+    token: string;
+    portfolio: Portfolio;
+    onBack: () => void;
+    onUnauthorized: () => void;
+    onLogout: () => void;
+}){
     const[holdings, updateHoldings] = useState<Holding[]>([]);
     const[loading, setLoading] = useState(true);
     const[error, setError] = useState("");
@@ -27,7 +39,7 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
     useEffect(() => {
         async function load() {
             try{
-                const data = await apiFetch(`/portfolios/${portfolio.id}/holdings`, {}, token);
+                const data = await apiFetch(`/portfolios/${portfolio.id}/holdings`, {}, token, onUnauthorized);
                 updateHoldings(data);
                 setError("");
             } catch(e){
@@ -46,7 +58,7 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
 
         try {
             setUploading(true);
-            const statement = await uploadStatement(portfolio.id, selectedFile, token);
+            const statement = await uploadStatement(portfolio.id, selectedFile, token, onUnauthorized);
             if (statement.status === "failed") {
                 setUploadError(`Couldn't parse statement: ${statement.error_message}`);
             } else {
@@ -68,6 +80,7 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
     return (    
         <div>
             <button onClick={onBack}> Back to portfolios </button>
+            <button onClick={onLogout}>Log out</button>
             <h2>{portfolio.name}</h2>
 
             <div>
@@ -88,7 +101,7 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
             </div>
 
             {showAnalysis ? (
-                <AnalysisView token={token} portfolio={portfolio} refreshKey={refreshKey} />
+                <AnalysisView token={token} portfolio={portfolio} refreshKey={refreshKey} onUnauthorized={onUnauthorized} />
             ) : (error ? <p>{error}</p> :
                 holdings.length === 0 ? <p>There are no current holdings</p> : (
                 <table>

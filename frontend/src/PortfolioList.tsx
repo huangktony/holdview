@@ -7,7 +7,17 @@ export type Portfolio = {
   name: string;
 };
 
-export function PortfolioList({ token, onSelect }: { token: string; onSelect: (p: Portfolio) => void }) {
+export function PortfolioList({
+  token,
+  onSelect,
+  onUnauthorized,
+  onLogout,
+}: {
+  token: string;
+  onSelect: (p: Portfolio) => void;
+  onUnauthorized: () => void;
+  onLogout: () => void;
+}) {
   // YOU: two pieces of state — the portfolios list, and a loading flag
   const[portfolios, updatePortfolios] = useState<Portfolio[]>([]);
   const[loading, setLoading] = useState(true);
@@ -17,7 +27,7 @@ export function PortfolioList({ token, onSelect }: { token: string; onSelect: (p
     async function load() {
       // YOU: fetch GET /portfolios with the token, store result, flip loading off
       try{
-        const data = await apiFetch("/portfolios", {}, token);
+        const data = await apiFetch("/portfolios", {}, token, onUnauthorized);
         updatePortfolios(data);
       } catch (e){
         setError("No portfolios found");
@@ -38,6 +48,7 @@ export function PortfolioList({ token, onSelect }: { token: string; onSelect: (p
 
   return (
     <div>
+      <button onClick={onLogout}>Log out</button>
       <h2>Your Portfolios</h2>
       <ul>
         {portfolios.map((portfolio) => (

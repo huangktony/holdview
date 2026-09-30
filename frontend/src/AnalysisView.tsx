@@ -13,7 +13,17 @@ type Analysis = {
     items: AnalysisItem[];
 };
 
-export function AnalysisView({ token, portfolio, refreshKey}: { token: string; portfolio: Portfolio; refreshKey: number}) {
+export function AnalysisView({
+    token,
+    portfolio,
+    refreshKey,
+    onUnauthorized,
+}: {
+    token: string;
+    portfolio: Portfolio;
+    refreshKey: number;
+    onUnauthorized: () => void;
+}) {
     const [analysis, setAnalysis] = useState<Analysis | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -21,7 +31,7 @@ export function AnalysisView({ token, portfolio, refreshKey}: { token: string; p
     useEffect(() => {
         async function load() {
             try {
-                const data = await apiFetch(`/portfolios/${portfolio.id}/analysis`, {}, token)
+                const data = await apiFetch(`/portfolios/${portfolio.id}/analysis`, {}, token, onUnauthorized)
                 setAnalysis(data);
                 setError("");
             } catch(e){
