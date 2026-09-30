@@ -1,8 +1,9 @@
+import os
 import jwt
 from datetime import datetime, timedelta
 
 # Constants
-SECRET_KEY = "dev-secret-change-this-in-production"
+SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 

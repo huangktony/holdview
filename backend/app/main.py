@@ -41,7 +41,7 @@ credentials_exception = HTTPException(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["http://localhost:5173", "http://localhost:5174"],
+    allow_origins = ["http://localhost:5173", "http://localhost:5174", "http://18.234.196.253:5174"],
     allow_methods = ["*"],
     allow_headers = ["*"],
     allow_credentials = True,
@@ -190,7 +190,7 @@ async def upload_statement(
     db.refresh(new_statement)
 
     try:
-        parsed_holdings = parse_robinhood_statement(storage_path)
+        parsed_holdings = parse_robinhood_statement(str(storage_path))
         db.query(Holding).filter(Holding.portfolio_id == portfolio.id).delete()
         for parsed_holding in parsed_holdings:
             db.add(Holding(symbol=parsed_holding.symbol, shares=parsed_holding.shares, price=parsed_holding.price, mkt_value=parsed_holding.mkt_value, portfolio_id=portfolio.id))

@@ -19,6 +19,7 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: postgresql+psycopg://holdview:holdview@db:5432/holdview
+      SECRET_KEY: ${SECRET_KEY}
     ports:
       - "8000:8000"
     volumes:
@@ -29,11 +30,12 @@ services:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
-    ports: 
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://18.234.196.253:8000
+    ports:
       - "5174:80"
-    environment:
-      VITE_API_URL: http://localhost:8000
 
 volumes:
   pgdata:

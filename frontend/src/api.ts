@@ -20,7 +20,7 @@ export async function apiFetch(
 export async function uploadStatement(
     portfolioId: number,
     file: File,
-    token?: string
+    token: string
 ) {
     const headers: Record<string, string> = {};
     headers["Authorization"] = `Bearer ${token}`;
