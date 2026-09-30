@@ -1,7 +1,10 @@
 from decimal import Decimal, ROUND_HALF_UP
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Request, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from uuid import uuid4
@@ -30,6 +33,10 @@ import bcrypt
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 MAX_FILE_SIZE = 10 * 1024 * 1024 # 10 MB
 UPLOAD_DIR = Path("uploads/statements")
 
@@ -52,7 +59,8 @@ def root():
     return {"message": "Hello from Holdview"}
 
 @app.post("/users", response_model=UserResponse)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("3/hour")
+def create_user(request: Request, user: UserCreate, db: Session = Depends(get_db)):
     hashed_password = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     new_user = User(email=user.email, password_hash=hashed_password)
     db.add(new_user)
@@ -67,7 +75,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 @app.post("/auth/login", response_model=TokenResponse)
-def login(credentials: LoginRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, credentials: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.email).first()
     if user is None:
         raise credentials_exception

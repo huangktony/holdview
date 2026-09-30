@@ -12,6 +12,11 @@ async function extractErrorMessage(response: Response): Promise<string> {
         if (Array.isArray(detail) && detail.length > 0) {
             return detail.map((err) => err.msg).filter(Boolean).join("; ");
         }
+
+        // slowapi's rate-limit response uses {"error": "..."} instead of "detail"
+        if (typeof body?.error === "string") {
+            return body.error;
+        }
     } catch {
         // response had no JSON body; fall through to generic message
     }
