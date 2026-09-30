@@ -1,0 +1,32 @@
+# Adds a TLS-terminating reverse proxy in front of the existing stack.
+# Use alongside the base file: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+#
+# Requires PUBLIC_DOMAIN and API_DOMAIN in .env, each pointed at this host's
+# IP via DNS A records before starting, and ports 80/443 open on the host
+# (80 is needed for Let's Encrypt's HTTP challenge and to redirect to HTTPS).
+services:
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+
+  frontend:
+    ports: !reset []
+
+  backend:
+    ports: !reset []
+
+volumes:
+  caddy_data:
+  caddy_config:
