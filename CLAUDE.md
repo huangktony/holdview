@@ -4,19 +4,29 @@ Portfolio intelligence platform. Parses brokerage PDF statements into structured
 holdings and surfaces concentration risk.
 
 **Stack:** Python / FastAPI / PostgreSQL / SQLAlchemy backend, React / TypeScript
-frontend. Docker work in progress (uncommitted as of 2026-08-08).
+frontend. Dockerized (Postgres, backend, nginx-served frontend via
+`docker-compose.yml`) and deployed on AWS as of 2026-09-22. `SECRET_KEY` and
+`DATABASE_URL` are required env vars; the app fails at import without them.
 
 ## Working contract
 
-Tony reasons first. Do not write his code for him.
+Updated 2026-09-22: the project is deployed. Claude may now write code directly
+instead of only pressure-testing Tony's own attempts. This replaces the prior
+"do not write his code for him" rule everywhere, not just for polish work.
 
-Pressure-test his approach, ask the question that points at the gap, and explain
-new-vocabulary constructs as they come up during building rather than as an
-upfront lecture. Escalate from question, to nudge, to hint, to partial structure,
-and only then to a full answer, and only when he is actually stuck.
+Understanding is still mandatory and still checked, not assumed. After writing
+a non-trivial change, explain it, then have Tony restate what it does and why
+in his own words before moving on. If the restatement is wrong or thin, correct
+it before proceeding, don't just move to the next task.
 
 Be direct when something is wrong. Do not validate a broken approach and quietly
 fix it later.
+
+Engineering decisions are made on merit (correctness, what the app actually
+needs), never chosen because they'd produce a good resume metric. Once work is
+picked on merit, measure it (latency, throughput, error rates, etc.) so real
+wins become quantifiable after the fact. Numbers are a byproduct, not a
+selection criterion.
 
 No em dashes in drafted writing.
 
@@ -96,15 +106,58 @@ holdings sections?
 
 There is no sample PDF or fixture in the repo, so the parser cannot be iterated
 on or regression-tested without a real statement on hand. Worth a redacted
-fixture before any of the above changes land.
+fixture before any of the above changes land. `backend/scratch/test_parser.py`
+is tracked and hardcodes a path in his Downloads folder, so it only runs on his
+machine.
+
+## 6. Uncaught non-ParseError exceptions
+
+`upload_statement` in `main.py` only catches `ParseError`. A `Decimal`
+`InvalidOperation` from a malformed token escapes as a 500 and leaves the
+Statement stuck at `pending`. Question: which failures should count as a failed
+parse, and where should that boundary live?
+
+---
+
+# Open: deploy and API review (2026-09-29)
+
+Read through the whole repo after the AWS deploy. Same rule as above: phrased as
+questions, do not hand him the patch.
+
+## 1. Upload failure is invisible in the UI
+
+The backend returns 201 with `status="failed"` on a bad parse, and
+`StatementResponse` omits `error_message`. `uploadStatement` in `api.ts` only
+checks `response.ok`. Question: what does the user see when a parse fails, and
+how would he tell that apart from a successful upload of an empty statement?
+This is his silent-failure principle applied across the API boundary.
+
+## 2. `VITE_API_URL` is set at the wrong time
+
+`docker-compose.yml` sets it as a runtime `environment:` on the frontend
+container, but Vite inlines env vars at build time and `frontend/Dockerfile` has
+no `ARG`. Question: where does the deployed bundle actually get its API URL, and
+how would he verify that from the browser?
+
+## 3. Unauthenticated `GET /users`
+
+Lists every registered email to anyone. Question: who is the intended caller of
+this route, and what is the blast radius if it stays?
+
+## 4. Dev settings on the deployed stack
+
+Postgres credentials are `holdview/holdview`, the DB port is published on the
+host, the backend runs `uvicorn --reload` with a source bind mount, and CORS and
+the API URL use plain http on a bare IP. Question: which of these are acceptable
+for the current stage, and which violate least privilege on a public host?
 
 ---
 
 # Also outstanding
 
-- Working tree has uncommitted Docker work: `Dockerfile`, `docker-compose.yml`,
-  `.dockerignore`, plus modifications to `alembic.ini`, `alembic/env.py`, and
-  `app/db/database.py`.
+- Docker work is committed (`5199d84`). Working tree still has uncommitted
+  deploy changes: `SECRET_KEY` from env in `core/security.py`, AWS IP in CORS
+  and `VITE_API_URL`, and a `str(storage_path)` fix in `main.py`.
 - Commits `195335d` and `d2bb381` carry identical messages
   ("Add holdings/analysis toggle with section-scoped error and empty states"),
   which usually means a double-commit rather than an intended amend.
