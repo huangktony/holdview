@@ -12,7 +12,6 @@ def parse_robinhood_statement(file_path: str) -> list[ParsedHolding]:
             if text is None:
                 continue
             for line in text.split('\n'):
-                print(f"[page {page_num+1}] in_holdings={in_holdings} | {line!r}")
                 if "Securities Held in Account" in line:
                     in_holdings = True
                     continue
