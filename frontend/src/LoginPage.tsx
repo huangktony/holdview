@@ -2,19 +2,22 @@
 import { useState } from "react";
 import { apiFetch } from "./api";
 
-export function LoginPage({ onLogin }: { onLogin: (token: string) => void }) {
+export function LoginPage({
+  onLogin,
+  onShowRegister,
+}: {
+  onLogin: (token: string) => void;
+  onShowRegister: () => void;
+}) {
   // email, password, error state — three useStates
   const[email, updateEmail] = useState("")
   const[password, updatePassword] = useState("")
   const[errorState, setError] = useState("")
 
   async function handleSubmit() {
-    // try: apiFetch POST /auth/login with JSON.stringify({email, password})
-    //      then onLogin(data.access_token)
-    // catch: setError("Invalid email or password")
     try{
         const data = await apiFetch("/auth/login", {
-            method: "POST", 
+            method: "POST",
             body: JSON.stringify({email, password}),
         });
         onLogin(data.access_token);
@@ -40,6 +43,9 @@ export function LoginPage({ onLogin }: { onLogin: (token: string) => void }) {
     />
     <button onClick={handleSubmit}>Log in</button>
     {errorState && <p>{errorState}</p>}
+    <p>
+      <button onClick={onShowRegister}>Create an account</button>
+    </p>
   </div>
 );
 }
