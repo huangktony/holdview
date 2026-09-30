@@ -46,9 +46,13 @@ export function HoldingsList({token, portfolio, onBack}: {token: string; portfol
 
         try {
             setUploading(true);
-            await uploadStatement(portfolio.id, selectedFile, token);
-            setUploadError("");
-            setRefreshKey(k => k + 1);
+            const statement = await uploadStatement(portfolio.id, selectedFile, token);
+            if (statement.status === "failed") {
+                setUploadError(`Couldn't parse statement: ${statement.error_message}`);
+            } else {
+                setUploadError("");
+                setRefreshKey(k => k + 1);
+            }
         } catch {
             setUploadError("Upload Failed") ;
         } finally {
