@@ -1,3 +1,4 @@
+import os
 from decimal import Decimal, ROUND_HALF_UP
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,7 +42,7 @@ credentials_exception = HTTPException(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["http://localhost:5173", "http://localhost:5174", "http://18.234.196.253:5174"],
+    allow_origins = os.environ["FRONTEND_ORIGINS"].split(","),
     allow_methods = ["*"],
     allow_headers = ["*"],
     allow_credentials = True,

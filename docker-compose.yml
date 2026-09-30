@@ -18,6 +18,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
+      FRONTEND_ORIGINS: ${FRONTEND_ORIGINS}
     ports:
       - "8000:8000"
     depends_on:
@@ -28,7 +29,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://18.234.196.253:8000
+        VITE_API_URL: ${BACKEND_URL}
     ports:
       - "5174:80"
 
