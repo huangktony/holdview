@@ -34,7 +34,18 @@ import bcrypt
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-limiter = Limiter(key_func=get_remote_address)
+def client_ip(request: Request) -> str:
+    # Behind Caddy every connection comes from the proxy, so the direct address
+    # is the same for all users. Only trust X-Forwarded-For when explicitly told
+    # a proxy we control sits in front, otherwise a client could spoof it to
+    # dodge the limit. Caddy appends the real client IP last.
+    if os.environ.get("TRUST_PROXY_HEADERS") == "1":
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            return forwarded.split(",")[-1].strip()
+    return get_remote_address(request)
+
+limiter = Limiter(key_func=client_ip)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 

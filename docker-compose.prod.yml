@@ -26,6 +26,8 @@ services:
 
   backend:
     ports: !reset []
+    environment:
+      TRUST_PROXY_HEADERS: "1"
 
 volumes:
   caddy_data:
