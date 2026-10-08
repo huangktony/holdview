@@ -27,6 +27,10 @@ services:
   backend:
     ports: !reset []
     environment:
+      # The rate limiter trusts X-Forwarded-For only because Caddy is the sole way
+      # to reach the backend (ports are reset above). If a published port is ever
+      # added here, clients can bypass Caddy and forge the header, which silently
+      # disables per-IP rate limiting. Remove this variable if that changes.
       TRUST_PROXY_HEADERS: "1"
 
 volumes:
