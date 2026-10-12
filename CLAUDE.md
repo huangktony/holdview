@@ -38,6 +38,7 @@ No em dashes in drafted writing.
   what I didn't know before, what still needs work.
 - `VOCAB.md` — new terminology.
 - `NEETCODE.md` — DSA progress, unrelated to the app.
+- `DEPLOY.md` — runbook for the live server: connect, deploy, verify, recover.
 
 ## Recurring blind spots
 
@@ -132,6 +133,9 @@ checks `response.ok`. Question: what does the user see when a parse fails, and
 how would he tell that apart from a successful upload of an empty statement?
 This is his silent-failure principle applied across the API boundary.
 
+Status 2026-10-12: fixed (`0ab29ba`). The UI now shows `error_message` when an
+upload comes back failed.
+
 ## 2. `VITE_API_URL` is set at the wrong time
 
 `docker-compose.yml` sets it as a runtime `environment:` on the frontend
@@ -139,10 +143,16 @@ container, but Vite inlines env vars at build time and `frontend/Dockerfile` has
 no `ARG`. Question: where does the deployed bundle actually get its API URL, and
 how would he verify that from the browser?
 
+Status 2026-10-12: fixed. `frontend/Dockerfile` takes a build `ARG`, fed from
+`BACKEND_URL` in `.env` (`0130f88`). Changing it needs a rebuild.
+
 ## 3. Unauthenticated `GET /users`
 
 Lists every registered email to anyone. Question: who is the intended caller of
 this route, and what is the blast radius if it stays?
+
+Status 2026-10-12: removed (`352663f`), live on the server as of today. `GET
+/users` now returns 405.
 
 ## 4. Dev settings on the deployed stack
 
@@ -151,13 +161,21 @@ host, the backend runs `uvicorn --reload` with a source bind mount, and CORS and
 the API URL use plain http on a bare IP. Question: which of these are acceptable
 for the current stage, and which violate least privilege on a public host?
 
+Status 2026-10-12: partly done. Credentials now come from `.env` (`c09a915`,
+`cf20ed7`), the DB port is not published, and `--reload` and the bind mount are
+gone from the base compose file (`f68261b`). Still open: plain http on a bare IP
+with ports 5174 and 8000 public (Caddy plan in `docker-compose.prod.yml`, needs
+a domain and Compose v2 on the server), a short Postgres password, and the
+`holdview-deploy` IAM user still has `AdministratorAccess`.
+
 ---
 
 # Also outstanding
 
-- Docker work is committed (`5199d84`). Working tree still has uncommitted
-  deploy changes: `SECRET_KEY` from env in `core/security.py`, AWS IP in CORS
-  and `VITE_API_URL`, and a `str(storage_path)` fix in `main.py`.
+- The deploy changes are all committed and pushed, and the server runs
+  `main`. The signing key was rotated on 2026-10-12 because the old one was
+  hardcoded in git history. `DEPLOY.md` is the runbook.
 - Commits `195335d` and `d2bb381` carry identical messages
   ("Add holdings/analysis toggle with section-scoped error and empty states"),
-  which usually means a double-commit rather than an intended amend.
+  which usually means a double-commit rather than an intended amend. Both are
+  pushed, so leave the history as it is.
